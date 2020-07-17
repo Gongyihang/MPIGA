@@ -131,7 +131,6 @@ Time:  157.22985229999998 s | total_distance:  6.462503133636991
 ![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/GA%E7%BB%93%E6%9E%9C1.png)
 ![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/GA%E7%BB%93%E6%9E%9C2.png)
 ![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/GA%E7%BB%93%E6%9E%9C3.png)
-![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/GA%E7%BB%93%E6%9E%9C4.png)
  
 ##### 结果分析：  
 如上表可以看出加速比可以反映采用并行算法相对于串行算法所体现出的优势，加速比数值越大，表明并行程序执行的效率越高，要将加速比的数值提高，也许需要增加并行处理的核心数量（进程数量）。
@@ -142,4 +141,5 @@ Time:  157.22985229999998 s | total_distance:  6.462503133636991
 
 通过这次实验，我了解了python中mpi4py库的使用。
 学习了python可视化库matplotlib。
-如将TSP问题可视化可得如下图片：
+如将TSP问题可视化可得如下图片：  
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/GA%E7%BB%93%E6%9E%9C4.png)
