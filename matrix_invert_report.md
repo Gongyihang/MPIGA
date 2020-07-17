@@ -97,16 +97,13 @@ WARNING: Open MPI accepted a TCP connection from what appears to be a another Op
 本结果通过改变使用的核数来观察实验结果。测试程序运行时间，取十次运行的平均值。
 ##### 1.串行算法
 示例：
-
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E4%B8%B2%E8%A1%8Cinvert1.png)
 十次运行结果如下：
-1	2	3	4	5
-12.068	11.295	11.305	12.442	11.502
-6	7	8	9	10	平均值
-11.727	11.127	10.792	10.698	12.281	11.5237
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E4%B8%B2%E8%A1%8Cinvert_res.png)
 
 2.并行算法
 单核示例：
- 
+
 十次运行结果如下：
 1	2	3	4	5
 9.245	11.339	10.268	9.557	10.019
