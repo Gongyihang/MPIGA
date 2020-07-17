@@ -102,50 +102,39 @@ WARNING: Open MPI accepted a TCP connection from what appears to be a another Op
 ![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E4%B8%B2%E8%A1%8Cinvert_res.png)
 
 2.并行算法
-单核示例：
-
+单核示例：  
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%B9%B6%E8%A1%8C%E5%8D%95%E6%A0%B8.png)
+十次运行结果如下：  
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%B9%B6%E8%A1%8C%E5%8D%95%E6%A0%B8invert_res.png)
+2核心示例：  
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%B9%B6%E8%A1%8C2%E6%A0%B8invert.png)
 十次运行结果如下：
-1	2	3	4	5
-9.245	11.339	10.268	9.557	10.019
-6	7	8	9	10	平均值
-10.343	9.075	9.613	9.433	9.874	9.8766
-2核心示例：
- 
-十次运行结果如下：
-1	2	3	4	5
-7.058	8.215	7.415	6.872	6.937
-6	7	8	9	10	平均值
-6.946	7.845	6.882	6.987	6.816	7.1973
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%B9%B6%E8%A1%8C2%E6%A0%B8invert_res.png)
 
-3核心示例：
- 
+3核心示例：  
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%B9%B6%E8%A1%8C3%E6%A0%B8invert.png)
 十次运行结果如下：
-1	2	3	4	5
-6.481	6.602	6.419	5.694	6.148
-6	7	8	9	10	平均值
-6.177	6.521	6.373	6.391	6.620	6.3426
-
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%B9%B6%E8%A1%8C3%E6%A0%B8invert_res.png)
 4核心示例：
- 
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%B9%B6%E8%A1%8C4%E6%A0%B8invert.png)
 十次运行结果如下：
-1	2	3	4	5
-6.039	6.260	6.323	6.012	5.459
-6	7	8	9	10	平均值
-5.295	5.462	5.148	5.733	5.390	5.7121
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%B9%B6%E8%A1%8C4%E6%A0%B8invert_res.png)
 
 3.多机并行
 示例：
- 
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%A4%9A%E6%9C%BA%E5%B9%B6%E8%A1%8Cinvert.png)
 十次运行结果如下：
-1	2	3	4	5
-14.421	13.864	14.859	13.631	15.125
-6	7	8	9	10	平均值
-13.861	13.398	13.761	13.569	14.590	14.1079
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%A4%9A%E6%9C%BA%E5%B9%B6%E8%A1%8Cinvert_res.png)
 
 结果如下：
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/invert%E7%BB%93%E6%9E%9C1.png)
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/invert%E7%BB%93%E6%9E%9C2.png)  
+
 结果分析：
 如上表可以看出加速比可以反映采用并行算法相对于串行算法所体现出的优势，加速比数值越大，表明并行程序执行的效率越高，要将加速比的数值提高，也许需要增加并行处理的核心数量（进程数量）。
 从并行多机实验结果可以看到，程序执行时间比串行算法的执行时间还要慢许多。从下图可以注意到，在linux1和linux2中各有一个进程在运行invert。但因为两台虚拟机之间需要进行网络数据传输，这一部分时间使得程序总体时间增加。
+
+![](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E7%9F%A9%E9%98%B5%E6%B1%82%E9%80%86%E5%B9%B6%E8%A1%8C%E5%A4%9A%E6%9C%BA.png)
  
 此外，在程序中，我将矩阵输出部分注释掉，以便于关注程序计算的时间。否则在矩阵阶数增大的情况下，在终端打印出结果将耗费大量时间。
 
