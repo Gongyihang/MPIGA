@@ -11,6 +11,7 @@ CPU型号与参数（虚拟机中分配数量为4）：i7-8565U，四核心八�
 #### 三、方案设计  
 
 本实验采用初等行变换并行化计算矩阵的逆矩阵。  
+![矩阵求逆流程图](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E7%9F%A9%E9%98%B5%E6%B1%82%E9%80%86%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
 
 #### 四、实现方法
 实验环境为Virtual Box中的CentOS-7
@@ -20,11 +21,11 @@ gcc(gcc version 4.8.5)
 算法实现语言：C语言
 
 #### 五、结果分析
- 
+![矩阵求逆结果分析](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E7%9F%A9%E9%98%B5%E6%B1%82%E9%80%86%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90.png)
 结果分析：
 如上表可以看出加速比可以反映采用并行算法相对于串行算法所体现出的优势，加速比数值越大，表明并行程序执行的效率越高，要将加速比的数值提高，也许需要增加并行处理的核心数量（进程数量）。
-从并行多机实验结果可以看到，程序执行时间比串行算法的执行时间还要慢许多。从下图可以注意到，在linux1和linux2中各有一个进程在运行invert。但因为两台虚拟机之间需要进行网络数据传输，这一部分时间使得程序总体时间增加。
- 
+从并行多机实验结果可以看到，程序执行时间比串行算法的执行时间还要慢许多。从下图可以注意到，在linux1和linux2中各有一个进程在运行invert。但因为两台虚拟机之间需要进行网络数据传输，这一部分时间使得程序总体时间增加。  
+![矩阵求逆并行多机](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E7%9F%A9%E9%98%B5%E6%B1%82%E9%80%86%E5%B9%B6%E8%A1%8C%E5%A4%9A%E6%9C%BA.png) 
 此外，在程序中，我将矩阵输出部分注释掉，以便于关注程序计算的时间。否则在矩阵阶数增大的情况下，在终端打印出结果将耗费大量时间。
  
 ### 《高性能计算实践》实验报告（正文）
@@ -35,7 +36,8 @@ gcc(gcc version 4.8.5)
 
 #### 二、实验环境的配置参数
 CPU型号与参数（虚拟机中分配数量为4）：i7-8565U，四核心八线程，主频 1.8GHz，动态加速频率 4.6GHz。
-内存容量：4G（虚拟机中分配4g）
+内存容量：4G（虚拟机中分配4g）  
+![处理器参数](https://github.com/Gongyihang/MPIGA/blob/master/pictures/%E5%A4%84%E7%90%86%E5%99%A8%E5%8F%82%E6%95%B0.png)  
 
 #### 三、实验题目问题分析
 本题目是一个常用的矩阵运算。  
@@ -50,81 +52,12 @@ CPU型号与参数（虚拟机中分配数量为4）：i7-8565U，四核心八�
 #### 四、方案设计  
 本实验采用初等行变换并行化计算矩阵的逆矩阵。
 ##### 1.求方阵的逆的串行算法
-这里，我们不妨记A(0)=A，用 Gauss-Jordan 消去法求A^(-1)的算法是由A^((0))出发通过变换得到方阵序列{A^((k))}，A^((k))=[a_ij^((k))]，(k=0,1,…,n)，每次由A^(k-1)到A^((k))的变换执行下述的计算：
-a_kk^((k))=1/a_kk^((k-1))
-对于k行的其它诸元素：a_kj^((k))=a_kk^((k) )*a_kj^((k-1) )     j=1,2,……,n;j≠ k
-
-除k行、k列外的其它元素：a_ij^((k))=a_ij^((k-1) )-a_ik^((k-1) )*a_kj^((k) )     (1≤i,j≤n,j≠k)
-对于k列的其它诸元素：a_ik^((k))=-a_ik^((k-1) )*a_kk^((k) )     i=1,2,……,n;i≠ k
-这样计算得到的A^((n))就是A^(-1)，矩阵求逆串行算法如下所示。假定一次乘法和加法运算时间或一次除法运算时间为一个单位时间，则下述矩阵求逆算法的时间复杂度为O(n^3)。
-1.1单处理器上的矩阵求逆算法
-输入：矩阵A_(n×n)
-输出：矩阵A_(n×n)^(-1)
-Begin
-for i=1 to n do
-(1) a[i,i]=1/a[i,i]
-(2)for j=1 to n do
-if (j≠i) then a[i,j]=a[i,j]*a[i,i] end if
-end for
-(3)for k=1 to n do
-for j=1 to n do
-if ((k≠i and j≠i)) then a[k,j]=a[k,j]-a[k,i]*a[i,j] end if
-end for
-end for
-(4)for k=1 to n do
-if (k≠i) then a[k,i]= -a[k,i]*a[i,i] end if
-end for
-end for
-End
-2.方阵求逆的并行算法
-矩阵求逆的过程中，依次利用主行 i(i=0,1,…,n-1)对其余各行 j(j≠i)作初等行变换，由于各行计算之间没有数据相关关系，因此我们对矩阵 A 按行划分来实现并行计算。考虑到在计算过程中处理器之间的负载均衡，对 A 采用行交叉划分：设处理器个数为 p，矩阵 A的阶数为 n， m = ⌈n/p⌉，对矩阵 A 行交叉划分后，编号为 i(i=0,1,…,p-1)的处理器存有 A 的第 i,i+p,…,i+(m-1)p 行。在计算中，依次将第 0,1,…,n-1 行作为主行，将其广播给所有处理器，这实际上是各处理器轮流选出主行并广播。发送主行数据的处理器利用主行对其主行之外的 m-1 行行向量做行变换，其余处理器则利用主行对其 m 行行向量做行变换。具体算法流程图如下：
- 
-2.1 矩阵求逆的并行算法
-输入：矩阵A_(n×n)
-输出：矩阵A_(n×n)^(-1)
-Begin
-对所有处理器 my_rank(my_rank=0,…, p-1)同时执行如下的算法:
-for i=0 to m-1 do
-for j=0 to p-1 do
-(1)if (my_rank=j) then /* 主元素在本处理器中*/
-(1.1) v=i*p+j /* v 为主元素的行号*/
-a[i,v]=1/ a[i,v]
-(1.2)for k=0 to n-1 do
-if (k≠v) then a[i,k]=a[i,k]*a[i,v] end if
-end for
-(1.3)for k= 0 to n-1 do
-f[k]=a[i,k]
-end for
-(1.4)将变换后的主行元素(存于数组 f 中)广播到所有处理器中
-else /* 主元素不在本处理器中*/
-(1.5) v=i*p+j /* v 为主元素的行号*/
-(1.6) 接收广播来的主行元素存于数组 f 中
-end if
-(2)if (my_rank≠j) then /* 主元素不在本处理器中*/
-(2.1)for k= 0 to m-1 do /*处理非主行、非主列元素*/
-for w= 0 to n-1 do
-if (w ≠ v) then a[k,w]=a[k,w]-f[w]*a[k,v] end if
-end for
-end for
-(2.2)for k= 0 to m-1 do /*处理主列元素*/
-a[k,v]=-f[v]*a[k,v]
-end for
-else /*处理主行所在的处理器中的其它元素*/
-(2.3)for k= 0 to m-1 do
-if ( k ≠ i) then
-for w= 0 to n-1 do
-if (w ≠ v) then a[k,w]=a[k,w]-f[w]*a[k,v] end if
-end for
-end if
-end for
-(2.4)for k= 0 to m-1 do
-if ( k ≠ i) then a[k,v]=-f[v]*a[k,v] end if
-end for
-end if
-end for
-end for
-End
-若一次乘法和加法运算或一次除法运算时间为一个单位时间，则算法2.1所需的计算时间为 mn^2；又由于共有n行数据依次作为主行被广播，其通信时间为 n (ts+ ntw)logp，所以该算法并行计算时间为 Tp=mn2+n (ts+ ntw)logp。
+![1.求方阵的逆的串行算法](https://github.com/Gongyihang/MPIGA/blob/master/pictures/1.%E6%B1%82%E6%96%B9%E9%98%B5%E7%9A%84%E9%80%86%E7%9A%84%E4%B8%B2%E8%A1%8C%E7%AE%97%E6%B3%95.png)
+![1.1单处理器上的矩阵求逆算法](https://github.com/Gongyihang/MPIGA/blob/master/pictures/1.1%E5%8D%95%E5%A4%84%E7%90%86%E5%99%A8%E4%B8%8A%E7%9A%84%E7%9F%A9%E9%98%B5%E6%B1%82%E9%80%86%E7%AE%97%E6%B3%95.png)
+![2.方阵求逆的并行算法](https://github.com/Gongyihang/MPIGA/blob/master/pictures/2.%E6%96%B9%E9%98%B5%E6%B1%82%E9%80%86%E7%9A%84%E5%B9%B6%E8%A1%8C%E7%AE%97%E6%B3%95.png)
+![2.1 矩阵求逆的并行算法1](https://github.com/Gongyihang/MPIGA/blob/master/pictures/2.1%E7%9F%A9%E9%98%B5%E6%B1%82%E9%80%86%E7%9A%84%E5%B9%B6%E8%A1%8C%E7%AE%97%E6%B3%951.png)
+![2.1矩阵求逆的并行算法2](https://github.com/Gongyihang/MPIGA/blob/master/pictures/2.1%E7%9F%A9%E9%98%B5%E6%B1%82%E9%80%86%E7%9A%84%E5%B9%B6%E8%A1%8C%E7%AE%97%E6%B3%952.png)
+若一次乘法和加法运算或一次除法运算时间为一个单位时间，则算法2.1所需的计算时间为 m n^2 ；又由于共有n行数据依次作为主行被广播，其通信时间为 n (ts+ n tw)logp，所以该算法并行计算时间为 Tp=m n2 +n (ts+ n tw)logp。
 
 #### 五、实现方法
 实验环境为Virtual Box中的CentOS-7
@@ -133,18 +66,18 @@ openMPI（openmpi-3.1.0.tar.gz）
 gcc(gcc version 4.8.5)
 算法实现语言：C语言
 在虚拟机中整个程序运行步骤如下：
-1.使用data.cpp生成1200阶方阵保存在data.txt中。
+##### 1.使用data.cpp生成1200阶方阵保存在data.txt中。
 本实验使用data.cpp生成一个1200阶的随机方阵，方阵元素使用rand函数随机生成。生成的矩阵保存在data.txt文件中。
 c++文件编译生成命令，如：
 g++ -o data data.cpp
 ./data
-2.源代码的编译命令为mpic++，如：
+##### 2.源代码的编译命令为mpic++，如：
 （其中invertc.c为串行算法，串行算法可以直接使用./invertc运行。invert.c为并行算法）
 g++ -o invertc invertc.c
 ./invert
 mpicc -o invert invert.c
 mpirun -np 2 ./invert
-3.在运行可执行文件命令前面加上time可以获取程序的执行时间。如：
+##### 3.在运行可执行文件命令前面加上time可以获取程序的执行时间。如：
 time mpirun -np 2 ./invert
 结果的格式如下：
 real 0m0.135s
@@ -153,7 +86,7 @@ sys 0m0.005s
 其中 real 为程序执行所用的实际时间， user 为所有线程在实际计算的时间总和， sys 为
 程序执行中使用系统命令执行的时间。
 我们只使用 real 一项。
-4.在配置好linux1，linux2免密登陆的情况下，使用多机多进程运行命令如下：
+##### 4.在配置好linux1，linux2免密登陆的情况下，使用多机多进程运行命令如下：
 mpirun -host linux1,linux2 -np 2 ./test -mca btl_tcp_if_include enp0s3
 
 上述命令中的-mca btl_tcp_if_include enp0s3是为了解决以下警告：
@@ -164,6 +97,7 @@ WARNING: Open MPI accepted a TCP connection from what appears to be a another Op
 本结果通过改变使用的核数来观察实验结果。测试程序运行时间，取十次运行的平均值。
 ##### 1.串行算法
 示例：
+
 十次运行结果如下：
 1	2	3	4	5
 12.068	11.295	11.305	12.442	11.502
